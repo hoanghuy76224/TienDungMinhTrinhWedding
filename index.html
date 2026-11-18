@@ -93,10 +93,10 @@ section{position:relative}
 .hc::after{content:"";position:absolute;left:0;right:0;bottom:0;height:7%;background:linear-gradient(transparent,var(--paper));pointer-events:none}
 .hc>div,.hc>button{position:absolute}
 .hseal{left:49.6%;top:36.2%;width:9.6%;aspect-ratio:1.2;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:400 4.6cqw/1 'UTM EdwardianKT',cursive;color:#fff;text-shadow:0 1px 1px rgba(120,60,70,.5);padding-bottom:.4cqw}
-.hcel{left:6.6%;width:52%;top:58.2%;text-shadow:0 0 4px #e8e7e5,0 0 8px #e8e7e5;text-align:center;font:700 2.1cqw/1.4 'Cormorant Garamond',serif;letter-spacing:.26em;text-indent:.26em;text-transform:uppercase;color:#4b6733}
+.hcel{left:4%;width:57%;top:57.4%;text-shadow:0 0 4px #e8e7e5,0 0 8px #e8e7e5;text-align:center;font:700 1.9cqw/1.4 'Cormorant Garamond',serif;letter-spacing:.26em;text-indent:.26em;text-transform:uppercase;color:#4b6733}
 .hr{display:flex;align-items:center;justify-content:center;white-space:nowrap}
-.hr.r1{left:6%;width:52%;top:60.4%;height:7.2%;font-size:7.6cqw;color:#7a5a45;transform:rotate(-1.2deg)}
-.hr.r2{left:10%;width:52%;top:69.2%;height:7.6%;font-size:7.6cqw;color:#3f5a28;transform:rotate(1.2deg)}
+.hr.r1{left:9%;width:44%;top:60.4%;height:7.2%;font-size:7.6cqw;color:#7a5a45;transform:rotate(-1.2deg)}
+.hr.r2{left:13%;width:44%;top:69.2%;height:7.6%;font-size:7.6cqw;color:#3f5a28;transform:rotate(1.2deg)}
 .hamp{left:36%;width:6%;top:67.2%;font-size:7cqw;color:#b9707a;text-align:center;line-height:1;display:none}
 .hdate{left:62.2%;width:24%;top:62%;height:10.6%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#8a5f55}
 .hdate .d1{font:600 4cqw/1 'Cormorant Garamond',serif;letter-spacing:.2em;text-indent:.2em}
@@ -504,6 +504,15 @@ const tl0=document.getElementById('timeLine');
 if(PARTY_TIME){tl0.textContent='Vào lúc '+PARTY_TIME.replace(':',' giờ ');}
 else{tl0.textContent='Đón khách từ 16 giờ 30';}
 
+
+// co chữ cho vừa khung
+function fitText(el,maxW){const sp=document.createElement('span');sp.style.cssText='display:inline-block;white-space:nowrap';sp.textContent=el.textContent;el.textContent='';el.appendChild(sp);
+  let fs=parseFloat(getComputedStyle(el).fontSize),n=0;maxW=maxW||el.clientWidth;while(sp.getBoundingClientRect().width>maxW&&fs>10&&n++<60){fs-=1;el.style.fontSize=fs+'px'}}
+function fitAll(){
+  document.querySelectorAll('.hr').forEach(e=>{e.style.fontSize='';fitText(e,e.clientWidth*.92)});
+  const g=document.getElementById('coverGuest');if(g){g.style.fontSize='';fitText(g,g.parentElement.clientWidth*.82)}
+}
+document.fonts.ready.then(fitAll);addEventListener('resize',fitAll);
 // mở phong bì
 const cover=document.getElementById('cover'),envC=document.getElementById('env_cover');
 function openCard(){
