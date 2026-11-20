@@ -588,10 +588,7 @@ function openCard(){cover.classList.add('gone');document.body.classList.remove('
 let opening=false;
 function startOpen(){
   if(opening)return;opening=true;cover.classList.add('go');
-  envx.classList.add('s1');
-  setTimeout(()=>envx.classList.add('s2'),600);
-  setTimeout(()=>envx.classList.add('s3'),1500);
-  setTimeout(()=>{petals(18);openCard()},3700);
+  setTimeout(openCard,250);
 }
 cover.addEventListener('click',startOpen);
 document.getElementById('moreBtn').addEventListener('click',()=>{const n=document.querySelector('.pst');if(n)n.scrollIntoView({behavior:'smooth'})});
