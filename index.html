@@ -255,6 +255,41 @@ section{position:relative}
 .end .nm .a{font-size:34px;color:var(--rose);padding-bottom:2px}
 footer{text-align:center;padding:16px;font-size:13px;letter-spacing:.2em;color:#8a967a;text-transform:uppercase;background:var(--paper)}
 
+/* ============ ADMIN (#admin) ============ */
+.adm{position:fixed;inset:0;z-index:10000;background:#f6e9e5;overflow:auto;display:none;color:var(--ink)}
+.adm.show{display:block}
+.adm .lock{max-width:340px;margin:18vh auto 0;padding:26px 22px;background:#fff;border:1px solid var(--line);border-radius:16px;text-align:center;box-shadow:0 10px 30px rgba(75,103,51,.1)}
+.adm h1{font-size:24px;color:var(--green);margin-bottom:8px}
+.adm input,.adm textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font:16px 'Lora','Cormorant Garamond',serif;color:var(--ink);outline:none}
+.adm .lock input{margin:12px 0}
+.adm .b{display:inline-flex;align-items:center;justify-content:center;padding:10px 18px;border-radius:999px;border:0;background:var(--green);color:#fff;font:600 14px/1 'Lora','Cormorant Garamond',serif;letter-spacing:.06em;cursor:pointer}
+.adm .b.gh{background:transparent;color:var(--green);border:1px solid var(--green)}
+.adm .b:disabled{opacity:.5}
+.adm-in{max-width:760px;margin:0 auto;padding:18px 14px 50px}
+.adm-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.adm-hd small{display:block;font-size:13px;color:var(--soft);margin-top:2px}
+.adm .row{display:flex;gap:8px;flex-wrap:wrap}
+.adm .x{padding:8px 14px;border-radius:999px;border:1px solid var(--green);background:transparent;color:var(--green);font:600 13px/1 'Lora','Cormorant Garamond',serif;cursor:pointer}
+.adm .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.adm .stats div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 4px;text-align:center}
+.adm .stats b{display:block;font-size:26px;color:var(--green);line-height:1.1}
+.adm .stats span{font-size:12px;color:var(--soft);letter-spacing:.04em}
+.adm .box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.adm .box h2{font-size:17px;color:var(--green);margin-bottom:10px}
+.adm .gi{border-top:1px solid rgba(95,124,63,.2);padding:10px 0;display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+.adm .gi:first-child{border-top:0}
+.adm .gi .nm{font-weight:700;color:var(--green)}
+.adm .gi .mt{font-size:14px;color:var(--soft);margin-top:2px;line-height:1.4}
+.adm .gi .mt p{color:var(--ink);font-style:italic;margin-top:4px}
+.adm .gi button{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--green);font:600 12.5px/1 'Lora','Cormorant Garamond',serif;cursor:pointer;white-space:nowrap}
+.adm .gi button.del{color:#a33;border-color:#e0b4b4}
+.adm .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;margin-left:6px;background:#e4eed8;color:#3f6a24}
+.adm .tag.no{background:#f3dede;color:#9a3a3a}
+.adm .empty{text-align:center;color:var(--soft);font-style:italic;padding:14px 0}
+.adm .lnk{font-size:13px;word-break:break-all;color:var(--green2)}
+.admtoast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:rgba(40,55,30,.92);color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;z-index:10001;opacity:0;pointer-events:none;transition:opacity .3s}
+.admtoast.on{opacity:1}
+
 .fab{position:fixed;right:max(14px,calc(50vw - 240px + 14px));bottom:18px;z-index:60;width:44px;height:44px;border-radius:50%;background:rgba(75,103,51,.88);color:#fff;border:0;font-size:20px;display:none;cursor:pointer}
 </style>
 </head>
@@ -476,13 +511,50 @@ footer{text-align:center;padding:16px;font-size:13px;letter-spacing:.2em;color:#
 
 <button class="fab" id="fab" aria-label="Lên đầu trang">↑</button>
 
+<!-- ================= ADMIN ================= -->
+<div class="adm" id="adm">
+  <div class="lock" id="admLock">
+    <h1>Quản lý thiệp</h1>
+    <p style="font-size:14px;color:var(--soft)">Nhập mật khẩu để xem danh sách khách</p>
+    <input id="pinIn" type="password" maxlength="80" autocomplete="off" aria-label="Mật khẩu admin">
+    <button class="b" id="pinBtn" type="button" style="width:100%">Vào trang quản lý</button>
+    <p id="pinErr" style="font-size:13px;color:#a33;margin-top:8px;min-height:18px"></p>
+  </div>
+  <div class="adm-in" id="admIn" hidden>
+    <div class="adm-hd">
+      <div><h1>Tiến Dũng &amp; Minh Trinh · 11.01.2027</h1><small id="admMode"></small></div>
+      <div class="row"><button class="x" id="admClose" type="button">Xem thiệp</button><button class="x" id="admOut" type="button">Thoát admin</button></div>
+    </div>
+    <div class="stats"><div><b id="stAll">0</b><span>Phản hồi</span></div><div><b id="stYes">0</b><span>Sẽ tham dự</span></div><div><b id="stNo">0</b><span>Không đến</span></div><div><b id="stPax">0</b><span>Tổng khách</span></div></div>
+    <div class="box">
+      <h2>Tạo link mời theo tên khách</h2>
+      <div class="row"><input id="gName" placeholder="Tên trên thiệp (VD: Anh Hùng &amp; gia đình)" style="flex:1;min-width:200px"><button class="b" id="gAdd" type="button">Tạo link</button></div>
+      <div id="gOut" style="margin-top:10px"></div>
+      <details style="margin-top:10px"><summary style="font-size:14px;cursor:pointer;color:var(--green)">Tạo nhiều link (mỗi dòng 1 tên)</summary>
+        <textarea id="gBulk" rows="5" style="margin-top:8px" placeholder="Cô Hạnh &amp; gia đình&#10;Anh Nam&#10;Bạn Thảo"></textarea>
+        <button class="b" id="gBulkAdd" type="button" style="margin-top:8px">Tạo link cho tất cả</button>
+      </details>
+    </div>
+    <div class="box">
+      <h2>Danh sách xác nhận &amp; lời chúc</h2>
+      <div class="row" style="margin-bottom:10px"><input id="q" placeholder="Tìm tên khách..." style="flex:1;min-width:160px"><button class="b gh" id="csv" type="button">Xuất Excel (CSV)</button></div>
+      <div id="rl"></div>
+    </div>
+  </div>
+</div>
+<div class="admtoast" id="admToast"></div>
+
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 /* ====== CẤU HÌNH ====== */
 const PREVIEW = true;          // false khi khách đã thanh toán -> ẩn dòng bản xem thử
 const PARTY_TIME = '';         // vd '11:00' khi có giờ đón khách
-const FIREBASE_CONFIG = null;  // dán config Firebase riêng của cặp này
+const FIREBASE_CONFIG = {apiKey:"AIzaSyDKojhw5-SFWukGSN_oSjw5vxJngrfIogo",authDomain:"vo-iu-dino-848d2.firebaseapp.com",projectId:"vo-iu-dino-848d2",storageBucket:"vo-iu-dino-848d2.firebasestorage.app",messagingSenderId:"879023470388",appId:"1:879023470388:web:ecc9128f6f280b26249761"};
+const COL_RSVP = 'rsvp_tiendungminhtrinh';
+const ADMIN_EMAIL = 'tiendungminhtrinh-admin@vo-iu-dino-848d2.firebaseapp.com';
 /* ====================== */
 
 if(!PREVIEW) document.getElementById('previewBar').remove();
@@ -594,11 +666,76 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
   if(!data.name){msg.textContent='Bạn nhập tên giúp chúng mình nhé';return}
   if(!db){msg.textContent='Bản xem thử: chưa kết nối lưu xác nhận';return}
   const b=e.target.querySelector('button');b.disabled=true;b.textContent='Đang gửi…';
-  try{await db.collection('rsvp').add({...data,ts:firebase.firestore.FieldValue.serverTimestamp()});
+  try{await db.collection(COL_RSVP).add({...data,ts:firebase.firestore.FieldValue.serverTimestamp()});
     msg.textContent=data.attend==='yes'?'Cảm ơn bạn! Hẹn gặp bạn ngày vui nhé ♡':'Cảm ơn lời chúc của bạn ♡';e.target.reset();
   }catch(err){msg.textContent='Gửi chưa được, bạn thử lại giúp nhé';}
   b.disabled=false;b.textContent='Gửi xác nhận';
 });
+
+// ================= ADMIN (#admin) =================
+(function(){
+  const $=s=>document.querySelector(s);
+  const adm=$('#adm');let auth=null,unsub=null,rows=[];
+  try{if(db&&firebase.auth){auth=firebase.auth();auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(()=>{});}}catch(e){console.warn(e)}
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const toast=t=>{const e=$('#admToast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)};
+  const isAdmin=()=>!!(auth&&auth.currentUser&&auth.currentUser.email===ADMIN_EMAIL);
+  const isHash=()=>/^#(quanly|admin)$/i.test(location.hash);
+  function show(){adm.classList.add('show');document.body.style.overflow='hidden';if(isAdmin())unlock();else setTimeout(()=>$('#pinIn').focus(),50)}
+  function hide(){adm.classList.remove('show');document.body.style.overflow='';if(isHash())history.replaceState(null,'',location.pathname+location.search)}
+  function unlock(){
+    if(!isAdmin())return;
+    $('#admLock').hidden=true;$('#admIn').hidden=false;
+    if(unsub)return;
+    $('#admMode').textContent='Đang đồng bộ online · cập nhật trực tiếp';
+    unsub=db.collection(COL_RSVP).onSnapshot(s=>{
+      rows=s.docs.map(d=>{const x=d.data();x.id=d.id;x.t=x.ts&&x.ts.toMillis?x.ts.toMillis():(x.ts||0);return x}).sort((a,b)=>b.t-a.t);draw();
+    },()=>{$('#admMode').textContent='Phiên quản lý đã hết hạn hoặc chưa có quyền đọc. Vào lại admin.'});
+  }
+  $('#pinBtn').addEventListener('click',()=>{
+    const pw=$('#pinIn').value.trim(),btn=$('#pinBtn'),err=$('#pinErr');
+    if(!pw||btn.disabled)return;
+    if(!auth){err.textContent='Chưa kết nối được máy chủ. Bạn thử lại nhé.';return}
+    btn.disabled=true;err.textContent='Đang kiểm tra mật khẩu…';
+    auth.signInWithEmailAndPassword(ADMIN_EMAIL,'tiendungminhtrinh-admin:'+pw).then(()=>{$('#pinIn').value='';err.textContent='';unlock()})
+    .catch(e=>{err.textContent=e.code==='auth/network-request-failed'?'Chưa kết nối được. Bạn thử lại nhé.':e.code==='auth/too-many-requests'?'Thử nhiều lần quá nhanh, vui lòng đợi một lát.':'Mật khẩu chưa đúng'})
+    .finally(()=>{btn.disabled=false});
+  });
+  $('#pinIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('#pinBtn').click()});
+  $('#admClose').addEventListener('click',hide);
+  $('#admOut').addEventListener('click',()=>{if(auth)auth.signOut().then(()=>location.reload())});
+  addEventListener('hashchange',()=>{if(isHash())show()});
+  if(isHash()){const c=document.getElementById('cover');if(c)c.remove();document.body.classList.remove('locked');show()}
+  if(auth)auth.onAuthStateChanged(()=>{if(isHash()&&isAdmin()&&$('#admIn').hidden)unlock()});
+
+  function draw(){
+    const q=$('#q').value.trim().toLowerCase();
+    const yes=rows.filter(r=>r.attend==='yes'),no=rows.filter(r=>r.attend==='no');
+    $('#stAll').textContent=rows.length;$('#stYes').textContent=yes.length;$('#stNo').textContent=no.length;
+    $('#stPax').textContent=yes.reduce((a,r)=>a+(+r.count||1),0);
+    const list=rows.filter(r=>!q||(r.name||'').toLowerCase().includes(q));
+    $('#rl').innerHTML=list.length?list.map(r=>`<div class="gi" data-id="${esc(r.id)}"><div><div class="nm">${esc(r.name)}<span class="tag ${r.attend==='yes'?'':'no'}">${r.attend==='yes'?'Sẽ tham dự · '+(+r.count||1)+' người':'Không tham dự'}</span></div><div class="mt">${r.t?new Date(r.t).toLocaleString('vi-VN'):''}${r.guestParam&&r.guestParam!==r.name?' · mời là: '+esc(r.guestParam):''}${r.wish?'<p>'+esc(r.wish)+'</p>':''}</div></div><button type="button" class="del" data-del="${esc(r.id)}">Xoá</button></div>`).join(''):'<div class="empty">Chưa có xác nhận nào.</div>';
+  }
+  $('#q').addEventListener('input',draw);
+  $('#rl').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;const r=rows.find(x=>x.id===b.dataset.del);if(r&&confirm('Xoá phản hồi của '+r.name+'?'))db.collection(COL_RSVP).doc(r.id).delete().catch(()=>toast('Chưa xoá được, thử lại nhé'))});
+  $('#csv').addEventListener('click',()=>{
+    const data=[['Tên','Tham dự','Số người','Lời chúc','Mời là','Thời gian']].concat(rows.map(r=>[r.name,r.attend==='yes'?'Có':'Không',r.count||'',r.wish||'',r.guestParam||'',r.t?new Date(r.t).toLocaleString('vi-VN'):'']));
+    const csv='﻿'+data.map(row=>row.map(v=>{v=String(v==null?'':v);if(/^[=+@-]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}).join(',')).join('\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='khach-moi-tien-dung-minh-trinh.csv';a.click();
+  });
+  // link mời
+  const link=n=>location.origin+'/?to='+encodeURIComponent(n.trim().slice(0,80));
+  const copy=t=>navigator.clipboard?navigator.clipboard.writeText(t):Promise.resolve();
+  function addLinks(names){
+    const out=$('#gOut');
+    names.forEach(n=>{const u=link(n);const d=document.createElement('div');d.className='gi';
+      d.innerHTML=`<div><div class="nm">${esc(n)}</div><div class="lnk">${esc(u)}</div></div><button type="button">Copy link</button>`;
+      d.querySelector('button').onclick=()=>copy(u).then(()=>toast('Đã copy link mời '+n));out.prepend(d)});
+  }
+  $('#gAdd').addEventListener('click',()=>{const n=$('#gName').value.trim();if(!n)return $('#gName').focus();addLinks([n]);$('#gName').value=''});
+  $('#gName').addEventListener('keydown',e=>{if(e.key==='Enter')$('#gAdd').click()});
+  $('#gBulkAdd').addEventListener('click',()=>{const l=$('#gBulk').value.split('\n').map(s=>s.trim()).filter(Boolean);if(l.length){addLinks(l.reverse());$('#gBulk').value=''}});
+})();
 </script>
 </body>
 </html>
