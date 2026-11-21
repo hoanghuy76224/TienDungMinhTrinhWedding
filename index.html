@@ -556,14 +556,13 @@ footer{text-align:center;padding:16px;font-size:13px;letter-spacing:.2em;color:#
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 /* ====== CẤU HÌNH ====== */
 const PREVIEW = true;          // false khi khách đã thanh toán -> ẩn dòng bản xem thử
 const PARTY_TIME = '';         // vd '11:00' khi có giờ đón khách
 const FIREBASE_CONFIG = {apiKey:"AIzaSyDKojhw5-SFWukGSN_oSjw5vxJngrfIogo",authDomain:"vo-iu-dino-848d2.firebaseapp.com",projectId:"vo-iu-dino-848d2",storageBucket:"vo-iu-dino-848d2.firebasestorage.app",messagingSenderId:"879023470388",appId:"1:879023470388:web:ecc9128f6f280b26249761"};
 const COL_RSVP = 'rsvp_tiendungminhtrinh';
-const ADMIN_EMAIL = 'tiendungminhtrinh-admin@vo-iu-dino-848d2.firebaseapp.com';
+const ADMIN_PIN = '2';         // mật khẩu vào #admin, đổi số ở đây
 /* ====================== */
 
 if(!PREVIEW) document.getElementById('previewBar').remove();
@@ -682,11 +681,10 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
 // ================= ADMIN (#admin) =================
 (function(){
   const $=s=>document.querySelector(s);
-  const adm=$('#adm');let auth=null,unsub=null,rows=[];
-  try{if(db&&firebase.auth){auth=firebase.auth();auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(()=>{});}}catch(e){console.warn(e)}
+  const adm=$('#adm');let unsub=null,rows=[];
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const toast=t=>{const e=$('#admToast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)};
-  const isAdmin=()=>!!(auth&&auth.currentUser&&auth.currentUser.email===ADMIN_EMAIL);
+  const isAdmin=()=>{try{return sessionStorage.getItem('tdmt_adm')==='1'}catch(e){return false}};
   const isHash=()=>/^#(quanly|admin)$/i.test(location.hash);
   function show(){adm.classList.add('show');document.body.style.overflow='hidden';if(isAdmin())unlock();else setTimeout(()=>$('#pinIn').focus(),50)}
   function hide(){adm.classList.remove('show');document.body.style.overflow='';if(isHash())history.replaceState(null,'',location.pathname+location.search)}
@@ -702,18 +700,16 @@ document.getElementById('rsvpForm').addEventListener('submit',async e=>{
   $('#pinBtn').addEventListener('click',()=>{
     const pw=$('#pinIn').value.trim(),btn=$('#pinBtn'),err=$('#pinErr');
     if(!pw||btn.disabled)return;
-    if(!auth){err.textContent='Chưa kết nối được máy chủ. Bạn thử lại nhé.';return}
-    btn.disabled=true;err.textContent='Đang kiểm tra mật khẩu…';
-    auth.signInWithEmailAndPassword(ADMIN_EMAIL,'tiendungminhtrinh-admin:'+pw).then(()=>{$('#pinIn').value='';err.textContent='';unlock()})
-    .catch(e=>{err.textContent=e.code==='auth/network-request-failed'?'Chưa kết nối được. Bạn thử lại nhé.':e.code==='auth/too-many-requests'?'Thử nhiều lần quá nhanh, vui lòng đợi một lát.':'Mật khẩu chưa đúng'})
-    .finally(()=>{btn.disabled=false});
+    if(pw!==ADMIN_PIN){err.textContent='Mật khẩu chưa đúng';return}
+    if(!db){err.textContent='Chưa kết nối được máy chủ. Bạn thử lại nhé.';return}
+    try{sessionStorage.setItem('tdmt_adm','1')}catch(e){}
+    $('#pinIn').value='';err.textContent='';unlock();
   });
   $('#pinIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('#pinBtn').click()});
   $('#admClose').addEventListener('click',hide);
-  $('#admOut').addEventListener('click',()=>{if(auth)auth.signOut().then(()=>location.reload())});
+  $('#admOut').addEventListener('click',()=>{try{sessionStorage.removeItem('tdmt_adm')}catch(e){}location.reload()});
   addEventListener('hashchange',()=>{if(isHash())show()});
   if(isHash()){const c=document.getElementById('cover');if(c)c.remove();document.body.classList.remove('locked');show()}
-  if(auth)auth.onAuthStateChanged(()=>{if(isHash()&&isAdmin()&&$('#admIn').hidden)unlock()});
 
   function draw(){
     const q=$('#q').value.trim().toLowerCase();
