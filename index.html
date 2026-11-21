@@ -104,6 +104,8 @@ section{position:relative}
 .frame.flip::after{left:auto;right:0;transform:scaleX(-1)}
 .frame.tall{min-height:auto}
 .frame.plain::after{display:none}
+.frame.plain{min-height:auto;padding:4% 7% 0}
+.frame.plain+*,section:has(>.frame.plain)+.duo{padding-top:30px}
 .cap{font-size:15px;letter-spacing:.3em;text-indent:.3em;text-transform:uppercase;font-weight:700;color:var(--green)}
 .orn{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--rose);margin:10px auto;font-size:18px}
 .orn::before,.orn::after{content:"";height:1px;width:46px;background:linear-gradient(90deg,transparent,var(--rose2))}
